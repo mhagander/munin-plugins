@@ -24,7 +24,7 @@ hpfan - Munin plugin to monitor HP server fans
 
 =head1 CONFIGURATION
 
-The plugin needs to be able to execute /sbin/hplog, which requires
+The plugin needs to be able to execute /sbin/hplog -f, which requires
 root permissions. The following configuration is needed:
 
   [hpfan]
@@ -32,9 +32,8 @@ root permissions. The following configuration is needed:
 
 =head1 INTERPRETATION
 
-The graph will show information about how many fans are ok and how
-many are degratded.
-It does not, currently, show the speed of the fans.
+The graphs will show the fan speeds at different locations
+in the server.
 
 =head1 MAGIC MARKERS
 
@@ -60,37 +59,40 @@ if ( $ARGV[0] and $ARGV[0] eq "autoconf") {
    exit(0);
 }
 
-if ( $ARGV[0] and $ARGV[0] eq "config") {
-   print "graph_title HP Fans\n";
-   print "graph_category system\n";
-   print "ok.label Fans OK\n";
-   print "ok.type GAUGE\n";
-   print "ok.min 0\n";
-   print "degraded.label Fans degraded\n";
-   print "degraded.type GAUGE\n";
-   print "degraded.min 0\n";
-   print "degraded.critical 1\n";
-   exit(0);
-}
-
+my @sensors;
 open(HPLOG, "/sbin/hplog -f |") || die "Could not run hplog\n";
-my $ok=0;
-my $degraded=0;
-
 while (<HPLOG>) {
    next if /^\s*$/;
-   next if /^\s*ID/;
-   if (/\s+(Normal|Nominal)\s+/) {
-      $ok++;
-   }
-   elsif (/\s+Absent\s+/) {
-      # unknown, we don't track that
+   next if /^ID/;
+   if (/^\s*(\d+)\s*Var\. Speed\s+(\w\w+)\s+.*\(\s?(\d+)\)/) {
+      print STDERR "regex match found: \$1:$1\n\$2:$2\n\$3:$3\n";
+      push @sensors, {
+         'id' => $1,
+         'location' => $2,
+         'fan_speed' => $3
+      };
    }
    else {
-      $degraded++;
+      warn "Could not parse line $_";
    }
 }
 close(HPLOG);
 
-print "ok.value $ok\n";
-print "degraded.value $degraded\n";
+if ( $ARGV[0] and $ARGV[0] eq "config") {
+   print "graph_title HP fans\n";
+   print "graph_category sensors\n";
+   print "graph_vlabel % of Max\n";
+   for my $sensor (@sensors) {
+      print "s" . $sensor->{'id'} . ".label " . $sensor->{'location'} . "\n";
+      print "s" . $sensor->{'id'} . ".type GAUGE\n";
+      print "s" . $sensor->{'id'} . ".min 0\n";
+      print "s" . $sensor->{'id'} . ".max 100\n";
+      print "s" . $sensor->{'id'} . ".warning 10:90\n";
+      print "s" . $sensor->{'id'} . ".critical 0:100\n";
+   }
+   exit(0);
+}
+
+for my $sensor (@sensors) {
+    print "s" . $sensor->{'id'} . ".value " . $sensor->{'fan_speed'} . "\n";
+}
