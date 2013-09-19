@@ -64,7 +64,7 @@ open(HPLOG, "/sbin/hplog -t |") || die "Could not run hplog\n";
 while (<HPLOG>) {
    next if /^\s*$/;
    next if /^ID/;
-   if (/^\s*(\d+)\s*Basic Sensor\s+(CPU \(\d+\)|Processor Zone|I\/O Zone)\s+(\S+)\s+\d+F\/\s*(\d+)C\s+\d+F\/\s*(\d+)C/) {
+   if (/^\s*(\d+)\s*Basic Sensor\s+(CPU \(\d+\)|Ambient|Processor Zone|Memory Board|Mem\. Brd\. \(\d+\)|System Board|Pwr\. Supply Bay|I\/O Zone|SCSI Backplane)\s+(\S+)\s+\d+F\/\s*(\d+)C\s+\d+F\/\s*(\d+)C/) {
       push @sensors, {
 	'id' => $1,
 	'name' => $2,
@@ -74,14 +74,15 @@ while (<HPLOG>) {
 	};
    }
    else {
-      die "Could not parse line $_";
+      warn "Could not parse line $_";
    }
 }
 close(HPLOG);
 
 if ( $ARGV[0] and $ARGV[0] eq "config") {
    print "graph_title HP temperature\n";
-   print "graph_category system\n";
+   print "graph_category sensors\n";
+   print "graph_vlabel Celsius\n";
    for my $sensor (@sensors) {
       print "s" . $sensor->{'id'} . ".label " . $sensor->{'name'} . "\n";
       print "s" . $sensor->{'id'} . ".type GAUGE\n";
