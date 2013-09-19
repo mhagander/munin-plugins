@@ -87,8 +87,8 @@ if ( $ARGV[0] and $ARGV[0] eq "config") {
       print "s" . $sensor->{'id'} . ".type GAUGE\n";
       print "s" . $sensor->{'id'} . ".min 0\n";
       print "s" . $sensor->{'id'} . ".max 100\n";
-      print "s" . $sensor->{'id'} . ".warning 100\n";
-      print "s" . $sensor->{'id'} . ".critical 0|90\n";
+      print "s" . $sensor->{'id'} . ".warning 10:90\n";
+      print "s" . $sensor->{'id'} . ".critical 0:100\n";
    }
    exit(0);
 }
