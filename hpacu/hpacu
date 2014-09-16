@@ -68,21 +68,21 @@ if ( $ARGV[0] and $ARGV[0] eq "config") {
    print "hpacu_controllers_deg.label Controllers degraded\n";
    print "hpacu_controllers_deg.type GAUGE\n";
    print "hpacu_controllers_deg.min 0\n";
-   print "hpacu_controllers_deg.critical 1\n";
+   print "hpacu_controllers_deg.critical 0.99\n";
    print "hpacu_logicaldrives_ok.label Logical Drives OK\n";
    print "hpacu_logicaldrives_ok.type GAUGE\n";
    print "hpacu_logicaldrives_ok.min 0\n";
    print "hpacu_logicaldrives_deg.label Logical Drives degraded\n";
    print "hpacu_logicaldrives_deg.type GAUGE\n";
    print "hpacu_logicaldrives_deg.min 0\n";
-   print "hpacu_logicaldrives_deg.critical 1\n";
+   print "hpacu_logicaldrives_deg.critical 0.99\n";
    print "hpacu_physicaldrives_ok.label Physical Drives OK\n";
    print "hpacu_physicaldrives_ok.type GAUGE\n";
    print "hpacu_physicaldrives_ok.min 0\n";
    print "hpacu_physicaldrives_deg.label Physical Drives degraded\n";
    print "hpacu_physicaldrives_deg.type GAUGE\n";
    print "hpacu_physicaldrives_deg.min 0\n";
-   print "hpacu_physicaldrives_deg.critical 1\n";
+   print "hpacu_physicaldrives_deg.critical 0.99\n";
    exit(0);
 }
 

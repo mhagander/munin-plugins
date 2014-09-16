@@ -68,7 +68,7 @@ if ( $ARGV[0] and $ARGV[0] eq "config") {
    print "degraded.label Power Supplies degraded\n";
    print "degraded.type GAUGE\n";
    print "degraded.min 0\n";
-   print "degraded.critical 1\n";
+   print "degraded.critical 0.99\n";
    exit(0);
 }
 
